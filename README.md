@@ -24,51 +24,67 @@ The project is pre-configured for the **Wokwi VS Code extension**. It simulates:
 
 ---
 
-## Setup and Usage
+## Installation and Prerequisites
 
-### 1. Requirements
-- [VS Code](https://code.visualstudio.com/) with the **Wokwi Simulation** extension.
-- Python 3.8+
-- `arduino-cli` (installed in the project root for local compilation).
+### 1. Wokwi VS Code Extension
+- Install the **Wokwi Simulation** extension from the VS Code Marketplace.
+- Press `F1` in VS Code and select **Wokwi: Request a new License** to activate the advanced features (like the serial bridge).
 
-### 2. Installation
-Install the necessary Python libraries:
-```bash
-pip install pyserial cryptography
-```
+### 2. Arduino CLI
+The local simulation requires `arduino-cli` to compile the firmware.
+- **Windows:** Download the latest `arduino-cli` executable and place it in the project root.
+- **Setup Core:** Run `./arduino-cli.exe core install arduino:avr`
+- **Setup Libraries:** Run:
+  ```powershell
+  ./arduino-cli.exe lib install "Keypad"
+  ./arduino-cli.exe lib install "LiquidCrystal I2C"
+  ```
 
-Install the Arduino libraries for local compilation:
-```bash
-./arduino-cli.exe lib install "Keypad" "LiquidCrystal I2C"
-```
+### 3. Python Environment
+- Python 3.8+ is required.
+- Install dependencies: `pip install pyserial cryptography`
 
-### 3. Compile and Simulate
-Compile the firmware into the `build` folder:
-```bash
-./arduino-cli.exe compile --fqbn arduino:avr:uno ./passkey --build-path ./passkey/build
-```
+---
 
-1.  Open `passkey/diagram.json` in VS Code.
-2.  Press **F1** and select **"Wokwi: Start Simulator"**.
-3.  The LCD should light up. If it's your first run, follow the prompts to set a new 4-digit PIN.
+## Serial Bridge Configuration
 
-### 4. Run the Client
-1.  On the simulated keypad, enter your 4-digit PIN and press `#`.
-2.  Once the LCD shows **"Waiting for PC"**, ensure the Wokwi tab is focused.
-3.  Run the Python client:
+Because the simulation runs inside VS Code, it does not create a physical COM port. Instead, it uses an **RFC2217 Serial Server**.
+
+- **Configuration:** This is enabled in `passkey/wokwi.toml` via `rfc2217ServerPort = 4000`.
+- **Port Remapping:** The Python client is configured to check `rfc2217://localhost:4000` before attempting to scan physical COM ports.
+
+---
+
+## Compilation and Deployment
+
+To update the simulation with code changes:
+
+1.  **Compile:** Run the following command from the project root:
+    ```powershell
+    ./arduino-cli.exe compile --fqbn arduino:avr:uno ./passkey --build-path ./passkey/build
+    ```
+2.  **Run Simulation:** Open `passkey/diagram.json`, press `F1`, and select **Wokwi: Start Simulator**.
+3.  **Unlock:** Enter your 4-digit PIN on the simulated keypad and press `#`.
+
+---
+
+## Running the PC Client
+
+1.  Ensure the Arduino LCD shows **"Waiting for PC"**.
+2.  **Crucial:** Click on the Wokwi simulation tab in VS Code so it remains the **active/focused window**.
+3.  Execute the client:
     ```bash
     python passkey/passkey.py
     ```
 
 ---
 
-## Project Structure
+## Troubleshooting and Debugging
 
-- `passkey/passkey.py`: The PC client (Encryption/Decryption/UI).
-- `passkey/passkey.ino`: Upgraded firmware with LCD and Keypad support.
-- `passkey/diagram.json`: Wokwi hardware configuration.
-- `passkey/wokwi.toml`: Simulator settings (including the RFC2217 serial bridge).
-- `GEMINI.md`: Detailed architecture and memory map for developers.
+- **LCD/LED Not Lighting Up:** Ensure `arduino-cli` compiled successfully and that `passkey/wokwi.toml` points to the correct `.hex` and `.elf` files in the `build` directory.
+- **Serial Timeout (No Response):** The Wokwi extension pauses serial processing if its tab is not focused. Ensure the simulation tab is visible and active when running the Python script.
+- **I2C Initialization Error:** If the hardware fails to boot (Fast Red Blink), verify that the I2C address in `passkey/passkey.ino` matches the `i2cAddress` in `passkey/diagram.json` (Default: `0x27`).
+- **Git Errors:** If `git push` is rejected, use `git pull --rebase origin main` to sync remote changes before pushing.
 
 ---
 
@@ -83,10 +99,3 @@ Compile the firmware into the `build` folder:
 | 11 | Slot Count | 0-4 stored credentials |
 | 12-27 | Salt | 16-byte random salt for encryption |
 | 32+ | Slots | 4 slots (240 bytes each) |
-
----
-
-## Important Notes
-- **Do not forget your Master Password.** There is no recovery mechanism.
-- **Wokwi Focus:** The simulation window must be the active tab in VS Code for the serial communication to work correctly.
-- **Local Build:** Always recompile after making changes to `passkey.ino` for the simulator to pick them up.
