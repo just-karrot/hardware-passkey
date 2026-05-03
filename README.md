@@ -1,12 +1,12 @@
-# PassKey — Hardware Password Vault (v2)
+# PassKey - Hardware Password Vault (v2)
 
 A robust, hardware-secured password manager combining an Arduino Uno (physical or simulated) and a Python-based PC client.
 
-Passwords are never stored in plaintext. They are encrypted on your PC using **AES-256-GCM** with a master password — the Arduino acts as a physical gatekeeper, requiring a **Hardware PIN** and storing only the encrypted "vault" in its EEPROM.
+Passwords are never stored in plaintext. They are encrypted on your PC using **AES-256-GCM** with a master password: the Arduino acts as a physical gatekeeper, requiring a **Hardware PIN** and storing only the encrypted "vault" in its EEPROM.
 
 ---
 
-## 🔒 Security Model
+## Security Model
 
 1.  **Physical Tier (Hardware PIN):** You must enter a 4-digit PIN on the device keypad to unlock communication. After 3 failed attempts, the device enters a `LOCKOUT` state.
 2.  **Encryption Tier (Master Password):** Passwords are encrypted via AES-256-GCM. The key is derived using PBKDF2-SHA256 (200,000 iterations) from your master password and a unique 16-byte salt stored on the device.
@@ -14,7 +14,7 @@ Passwords are never stored in plaintext. They are encrypted on your PC using **A
 
 ---
 
-## 🛠️ Hardware Simulation (Wokwi)
+## Hardware Simulation (Wokwi)
 
 The project is pre-configured for the **Wokwi VS Code extension**. It simulates:
 - **Arduino Uno**
@@ -24,7 +24,7 @@ The project is pre-configured for the **Wokwi VS Code extension**. It simulates:
 
 ---
 
-## 🚀 Setup & Usage
+## Setup and Usage
 
 ### 1. Requirements
 - [VS Code](https://code.visualstudio.com/) with the **Wokwi Simulation** extension.
@@ -42,7 +42,7 @@ Install the Arduino libraries for local compilation:
 ./arduino-cli.exe lib install "Keypad" "LiquidCrystal I2C"
 ```
 
-### 3. Compile & Simulate
+### 3. Compile and Simulate
 Compile the firmware into the `build` folder:
 ```bash
 ./arduino-cli.exe compile --fqbn arduino:avr:uno ./passkey --build-path ./passkey/build
@@ -62,7 +62,7 @@ Compile the firmware into the `build` folder:
 
 ---
 
-## 📂 Project Structure
+## Project Structure
 
 - `passkey/passkey.py`: The PC client (Encryption/Decryption/UI).
 - `passkey/passkey.ino`: Upgraded firmware with LCD and Keypad support.
@@ -72,21 +72,21 @@ Compile the firmware into the `build` folder:
 
 ---
 
-## 🧠 EEPROM Memory Map (1024 Bytes)
+## EEPROM Memory Map (1024 Bytes)
 
 | Bytes | Purpose | Description |
 |---|---|---|
 | 0 | PIN Flag | `0xAA` if PIN is set |
 | 1 | Fail Count | Lockout at 3 failed attempts |
-| 2–5 | PIN Digits | 4-digit PIN (obfuscated) |
-| 8–10 | Magic Header | `0xDE 0xAD 0xBE` |
-| 11 | Slot Count | 0–4 stored credentials |
-| 12–27 | Salt | 16-byte random salt for encryption |
+| 2-5 | PIN Digits | 4-digit PIN (obfuscated) |
+| 8-10 | Magic Header | `0xDE 0xAD 0xBE` |
+| 11 | Slot Count | 0-4 stored credentials |
+| 12-27 | Salt | 16-byte random salt for encryption |
 | 32+ | Slots | 4 slots (240 bytes each) |
 
 ---
 
-## ⚠️ Important Notes
+## Important Notes
 - **Do not forget your Master Password.** There is no recovery mechanism.
 - **Wokwi Focus:** The simulation window must be the active tab in VS Code for the serial communication to work correctly.
 - **Local Build:** Always recompile after making changes to `passkey.ino` for the simulator to pick them up.
