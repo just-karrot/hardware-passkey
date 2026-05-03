@@ -1,0 +1,80 @@
+{
+  "version": 1,
+  "author": "PassKey Project",
+  "editor": "wokwi",
+  "parts": [
+    {
+      "type": "wokwi-arduino-uno",
+      "id": "uno",
+      "top": 220,
+      "left": 20,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-lcd1602",
+      "id": "lcd",
+      "top": 20,
+      "left": 240,
+      "attrs": { "pins": "i2c", "i2cAddress": "0x27" }
+    },
+    {
+      "type": "wokwi-membrane-keypad",
+      "id": "keypad",
+      "top": 20,
+      "left": 500,
+      "attrs": { "variant": "4x4" }
+    },
+    {
+      "type": "wokwi-rgb-led",
+      "id": "rgb",
+      "top": 400,
+      "left": 500,
+      "attrs": { "common": "cathode" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "rR",
+      "top": 400,
+      "left": 430,
+      "attrs": { "value": "220" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "rG",
+      "top": 430,
+      "left": 430,
+      "attrs": { "value": "220" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "rB",
+      "top": 460,
+      "left": 430,
+      "attrs": { "value": "220" }
+    }
+  ],
+  "connections": [
+    ["lcd:GND",  "uno:GND.1", "black",  []],
+    ["lcd:VCC",  "uno:5V",    "red",    []],
+    ["lcd:SCL",  "uno:A5",    "yellow", []],
+    ["lcd:SDA",  "uno:A4",    "blue",   []],
+
+    ["keypad:R1", "uno:9",     "green",  []],
+    ["keypad:R2", "uno:8",     "green",  []],
+    ["keypad:R3", "uno:7",     "green",  []],
+    ["keypad:R4", "uno:6",     "green",  []],
+    ["keypad:C1", "uno:5",     "orange", []],
+    ["keypad:C2", "uno:4",     "orange", []],
+    ["keypad:C3", "uno:3",     "orange", []],
+    ["keypad:C4", "uno:2",     "orange", []],
+
+    ["rR:2",      "uno:11",    "red",    []],
+    ["rG:2",      "uno:12",    "green",  []],
+    ["rB:2",      "uno:13",    "blue",   []],
+    ["rR:1",      "rgb:R",     "red",    []],
+    ["rG:1",      "rgb:G",     "green",  []],
+    ["rB:1",      "rgb:B",     "blue",   []],
+    ["rgb:COM",   "uno:GND.2", "black",  []]
+  ],
+  "dependencies": {}
+}

@@ -1,0 +1,28 @@
+# --- Python ---
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+*$py.class
+
+# --- Arduino / Build ---
+# Exclude the arduino-cli executable and the build artifacts
+arduino-cli.exe
+arduino-cli
+passkey/build/
+.arduino/
+*.hex
+*.elf
+*.bin
+
+# --- IDEs & System ---
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# --- Secrets & Config ---
+.env
+# Keep a local copy of your device PIN or Master password notes private
+memory/
+*.log
